@@ -280,7 +280,7 @@ function instantiateExpansion(recipe: Recipe, modelId: string, cfg: AIGatewayCon
       if (!baseUrl) throw new AIConfigError(`${recipe.name} requires a base URL.`, recipe.setup_hint);
       const apiKey = recipe.auth_env?.required[0]
         ? cfg.env[recipe.auth_env.required[0]]
-        : 'unauthenticated';
+        : (cfg.env[`${recipe.id.toUpperCase()}_API_KEY`] ?? 'unauthenticated');
       return createOpenAICompatible({
         name: recipe.id,
         baseURL: baseUrl,
@@ -436,7 +436,9 @@ function instantiateChat(recipe: Recipe, modelId: string, cfg: AIGatewayConfig):
       const baseUrl = cfg.base_urls?.[recipe.id] ?? recipe.base_url_default;
       if (!baseUrl) throw new AIConfigError(`${recipe.name} requires a base URL.`, recipe.setup_hint);
       const required = recipe.auth_env?.required ?? [];
-      const apiKey = required[0] ? cfg.env[required[0]] : 'unauthenticated';
+      const apiKey = required[0]
+        ? cfg.env[required[0]]
+        : (cfg.env[`${recipe.id.toUpperCase()}_API_KEY`] ?? 'unauthenticated');
       if (required.length > 0 && !apiKey) {
         throw new AIConfigError(`${recipe.name} requires ${required[0]}.`, recipe.setup_hint);
       }
