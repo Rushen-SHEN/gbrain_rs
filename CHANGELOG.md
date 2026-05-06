@@ -2,6 +2,27 @@
 
 All notable changes to GBrain will be documented in this file.
 
+## [Branch note: feat/local-embedding]
+
+This fork branch builds on the `0.27.0` provider-gateway work; it does not
+introduce local embedding from scratch. `0.27.0` already made local embeddings
+possible via providers like Ollama.
+
+The branch-specific AI delta is narrower:
+
+- adds a generic `llamacpp` recipe for self-hosted OpenAI-compatible chat /
+  expansion endpoints (for example llama.cpp, vLLM, or sglang deployments)
+- fixes optional-auth auto-resolution for openai-compatible `chat` and
+  `expansion`, so `LLAMACPP_API_KEY` and similar `<RECIPE_ID>_API_KEY` env vars
+  are honored instead of silently falling back to `'unauthenticated'`
+
+In this fork's operator profiles, that means:
+
+- `Macmini` can stay local-first (`Ollama bge-m3` embeddings +
+  `llamacpp:qwen3.5-35b` for chat / expansion)
+- `MacbookPro-Work` can stay hybrid (`Ollama bge-m3` embeddings + cloud chat /
+  expansion)
+
 ## [0.27.0] - 2026-04-28
 
 ## **GBrain runs on any embedding stack. OpenAI, Google Gemini, Ollama, Voyage, or anything via LiteLLM — one config line away.**

@@ -24,7 +24,10 @@ start here.
 4. [`./skills/conventions/brain-routing.md`](./skills/conventions/brain-routing.md) —
    agent-facing decision table: when to switch brain, when to switch source, how
    cross-brain federation works (latent-space only; the agent decides).
-5. [`./skills/RESOLVER.md`](./skills/RESOLVER.md) — skill dispatcher. Read before any task.
+5. [`./docs/guides/deployment-profiles.md`](./docs/guides/deployment-profiles.md) —
+   public-repo host-profile guidance. Read before changing install docs, local setup,
+   or agent bootstrap instructions.
+6. [`./skills/RESOLVER.md`](./skills/RESOLVER.md) — skill dispatcher. Read before any task.
 
 ## Trust boundary (critical)
 
@@ -70,6 +73,17 @@ Ship via the `/ship` skill, not by hand.
 Never commit real names of people, companies, or funds into public artifacts. See the
 Privacy rule in `./CLAUDE.md`. GBrain pages reference real contacts; public docs must
 use generic placeholders (`alice-example`, `acme-example`, `fund-a`).
+
+## Deployment profiles
+
+This repo currently documents two compatible host profiles in this fork:
+
+- `Macmini` — local-first (`Ollama bge-m3` embeddings, `llamacpp:qwen3.5-35b` chat / expansion)
+- `MacbookPro-Work` — hybrid (`Ollama bge-m3` embeddings, cloud chat / expansion)
+
+Upstream `main` is still the generic cloud-first reference path. The rule for agents
+in this fork is additive documentation, not overwrite. If a task only applies to one
+host profile, label it and preserve the other path.
 
 ## Forks
 

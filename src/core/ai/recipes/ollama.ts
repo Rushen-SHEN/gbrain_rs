@@ -13,11 +13,11 @@ export const ollama: Recipe = {
   },
   touchpoints: {
     embedding: {
-      models: ['nomic-embed-text', 'mxbai-embed-large', 'all-minilm'],
-      default_dims: 768, // nomic-embed-text native dim
+      models: ['bge-m3', 'nomic-embed-text', 'mxbai-embed-large', 'all-minilm'],
+      default_dims: 1024, // bge-m3 native dim
       cost_per_1m_tokens_usd: 0,
       price_last_verified: '2026-04-20',
     },
   },
-  setup_hint: 'Install Ollama from https://ollama.ai, then `ollama pull nomic-embed-text` and `ollama serve`.',
+  setup_hint: 'Install Ollama from https://ollama.ai, then `ollama pull bge-m3` and `ollama serve`.',
 };

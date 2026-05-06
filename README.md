@@ -79,6 +79,20 @@ GBrain exposes 30+ MCP tools via stdio:
 
 Add to `~/.claude/server.json` (Claude Code), Settings > MCP Servers (Cursor), or your client's MCP config.
 
+## Deployment profiles
+
+Upstream `main` is the generic cloud-first reference path. This fork / branch keeps
+two operator profiles side-by-side. The profile guide is at
+[`docs/guides/deployment-profiles.md`](docs/guides/deployment-profiles.md).
+
+- `Macmini` = local-first path with Ollama `bge-m3` embeddings (`1024d`) and
+  `llamacpp:qwen3.5-35b` for chat / expansion
+- `MacbookPro-Work` = hybrid path with local Ollama `bge-m3` embeddings (`1024d`) and
+  cloud LLMs for chat / expansion
+
+Public-doc rule: keep host-specific setup additive and sanitized. Do not commit
+secrets or collapse both profiles into one machine-specific path.
+
 ### Remote MCP with OAuth 2.1 (ChatGPT, Claude Desktop, Cowork, Perplexity)
 
 `gbrain serve --http` starts a production-grade OAuth 2.1 server with an embedded admin dashboard. Zero external infrastructure. Every major AI client connects, every request is scoped, every action is logged.

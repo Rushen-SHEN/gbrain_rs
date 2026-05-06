@@ -25,6 +25,22 @@ Both axes follow the same 6-tier resolution pattern. Read
 mount, CEO-class with multiple team brains) and
 `skills/conventions/brain-routing.md` for the agent-facing decision table.
 
+## Deployment profiles
+
+Public repo: machine-specific setup must stay additive and sanitized. Read
+`docs/guides/deployment-profiles.md` before changing install docs, bootstrap
+instructions, or local-runtime assumptions.
+
+Current documented host profiles:
+
+- `Macmini` — local-first deployment with Ollama `bge-m3` embeddings (`1024d`)
+  plus `llamacpp:qwen3.5-35b` chat / expansion
+- `MacbookPro-Work` — hybrid deployment with Ollama `bge-m3` embeddings (`1024d`)
+  plus cloud chat / expansion
+
+Upstream `main` remains the generic cloud-first reference path. Do not overwrite one
+profile with the other. If a change is host-specific, label it.
+
 ## Architecture
 
 Contract-first: `src/core/operations.ts` defines ~41 shared operations (adds `find_orphans` in v0.12.3). CLI and MCP
@@ -40,6 +56,9 @@ strict behavior when unset.
 
 ## Key files
 
+- `docs/guides/deployment-profiles.md` — public-repo host-profile guide. Read before
+  editing install/bootstrap docs so `Macmini` and `MacbookPro-Work` remain
+  compatible.
 - `src/core/operations.ts` — Contract-first operation definitions (the foundation). Also exports upload validators: `validateUploadPath`, `validatePageSlug`, `validateFilename`, plus `matchesSlugAllowList(slug, prefixes)` (v0.23 glob matcher: `<prefix>/*` matches recursive children; bare `<prefix>` matches exact only). `OperationContext.remote` flags untrusted callers; `OperationContext.allowedSlugPrefixes` (v0.23) is the trusted-workspace allow-list set by the dream cycle. `put_page` enforces: when `viaSubagent` and `allowedSlugPrefixes` is set, slug must match the allow-list; else the legacy `wiki/agents/<id>/...` namespace check applies. Auto-link enabled for trusted-workspace writes (skipped only when `remote=true && !trustedWorkspace`). As of v0.26.0, every `Operation` also carries `scope?: 'read' | 'write' | 'admin'` + `localOnly?: boolean`. All ops are annotated; `sync_brain`, `file_upload`, `file_list`, and `file_url` are `admin + localOnly` (rejected over HTTP). `OperationContext.auth?: AuthInfo` is threaded through HTTP dispatch for scope enforcement in `serve-http.ts` before the op runs. **v0.26.9 (D12 + F7b):** `OperationContext.remote` is now a REQUIRED field in the TypeScript type — the compiler is the first defense against transports that forget to set it. Four trust-boundary call sites (`put_page` allowlist, file_upload trust-narrowing, submit_job protected-name guard, auto-link skip) flipped from falsy-default (`!ctx.remote`) to fail-closed semantics (`ctx.remote === false` for "trusted-only" sites and `ctx.remote !== false` for "untrust unless explicit-false"). Anything that isn't strictly `false` is now treated as remote. Closed an HTTP MCP shell-job RCE: a `read+write`-scoped OAuth token could submit `shell` jobs because the HTTP request handler's literal context skipped `remote: true` and `submit_job`'s protected-name guard saw a falsy undefined. Stdio MCP set the field correctly via dispatch.ts; HTTP inlined a parallel context-builder for several releases and lost it.
 - `src/core/engine.ts` — Pluggable engine interface (BrainEngine). `clampSearchLimit(limit, default, cap)` takes an explicit cap so per-operation caps can be tighter than `MAX_SEARCH_LIMIT`. Exports `LinkBatchInput` / `TimelineBatchInput` for the v0.12.1 bulk-insert API (`addLinksBatch` / `addTimelineEntriesBatch`). As of v0.13.1, `BrainEngine` has a `readonly kind: 'postgres' | 'pglite'` discriminator so migrations (`src/core/migrate.ts`) and other consumers can branch on engine without `instanceof` + dynamic imports.
 - `src/core/engine-factory.ts` — Engine factory with dynamic imports (`'pglite'` | `'postgres'`)
